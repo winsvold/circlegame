@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-114047069-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-114047069-1');
+    </script>
+
+    <meta name="description" content="Take control over a potent circle and crash it hard into a evil singularity.">
+    <meta name="author" content="Daniel Winsvold">
+    <meta name="keywords" content="game, javascript game, jquery game, paper.js">
+
+    <meta property="og:title" content="Circle Game" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://winsvold.github.io/circlegame/" />
+    <meta property="og:description" content="Take control over a potent circle and crash it hard into a evil singularity." />
+    <meta property="og:image" content="http://winsvold.github.io/circlegame/img/circlegame.jpg" />
+    <meta property="og:image:alt" content="Circle Game" />
+
+    <link rel="stylesheet" type="text/css" href="css/circle.css">
+    <script type="text/javascript" src="js/paper.js"></script>
+    <script type="text/paperscript" src="js/circlegame.js" canvas="myCanvas"></script>
+    <title>Circle Game</title>
+
+</head>
+
+<body bgcolor="black">
+<div id="canvasdiv">
+    <canvas id="myCanvas" height="1000" width="2000" style="background:gray"></canvas>
+</div>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/resize.js"></script>
+</body>
+
+</html>
