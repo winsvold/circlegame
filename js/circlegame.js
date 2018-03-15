@@ -4,10 +4,12 @@ var pause = 0;
 var pauseDetectEdge = 1;
 var colorchange = 1;
 view.zoom = 1;
-var huestart = 130;
-var huerange = 32;
+var huestart = 20;
+var huerange = 80;
 var dtc =1;
 var delay = 0;
+var smokenumb = 40;
+var numberOfPointCircles = 30;
 
 // Create a symbol, which we will use to place instances of later:
 var background = new Path.Rectangle( new Rectangle (new Point(0,0),new Point (2000,1000) ) );
@@ -78,7 +80,7 @@ Circles[1] = new Path.Circle({
 
 	radius: 20,
 
-	strokeColor: '#aaa',
+	strokeColor: '#000',
 
 	fillColor: '#000',
 
@@ -92,7 +94,7 @@ Circles[2] = new Path.Circle({
 
 	radius: 5,
 
-	strokeColor: '#aaa',
+	strokeColor: '#000',
 
 	fillColor: '#000',
 
@@ -162,7 +164,7 @@ var smokepath = new Path.Circle({
 
 	center: [-10, -10],
 
-	radius: 5,
+	radius: level === 10? 10 : 7,
 
 	strokeColor: 'gray'
 
@@ -174,7 +176,7 @@ var pointcirc = new Path.Circle({
 
 	center: [-10, -10],
 
-	radius: 5,
+	radius: level === 10? 10 : 7,
 
 	strokeColor: 'yellow'
 
@@ -191,8 +193,6 @@ var symbol = new Symbol(path);
 var smokeGroup = new Group();
 
 var smokedirGroup = new Group();
-
-var smokenumb = 50;
 
 var smokecount = 0;
 
@@ -220,7 +220,7 @@ var pointGroup = new Group();
 
 // Place the instances of the symbol:
 
-for (var i = 0; i < 20; i++) {
+for (var i = 0; i < numberOfPointCircles; i++) {
 
 	// The center position is a random point in the view:
 
@@ -252,6 +252,11 @@ for(i=0;i<numblines;i++){
 
 var acceleration = new Point(Math.random()*4-2,-2)*Point.random();
 
+var deviceTouchLeft = false;
+var deviceTouchRight = false;
+
+var windowWidth = $(window).width();
+
 var speed = new Point(Math.random()*4-2,Math.random()*4-2)*Point.random();
 
 var text = new Array();
@@ -278,7 +283,7 @@ text[0] = new PointText({
 
 text[2] = new PointText({
 
-	point: new Point(view.bounds.width/2,25),
+	point: new Point(view.bounds.width/2,35),
 
 	justification: 'center',
 
@@ -302,11 +307,11 @@ text[1] = new PointText({
 
 	fontSize: 20,
 
-	fillColor: 'yellow',
+	fillColor: 'black',
 
 	strokeColor: 'black',
 
-	strokeWidth: 0.6,
+	strokeWidth: 0.4,
 
 	content: 'Control with A W D S. Hit P to Pause'
 
@@ -436,7 +441,7 @@ if(level<11 && pause==0){
 
 	}
 
-	for (var i = 0; i < 20; i++) {
+	for (var i = 0; i < numberOfPointCircles; i++) {
 
 		var item = pointGroup.children[i];
 
@@ -541,15 +546,19 @@ if(level<11 && pause==0){
 
 	//-----------INPUT------------
 
-	if(Key.isDown('a') || Key.isDown('left'))
+	var touchTurnLeft = deviceTouchLeft && !deviceTouchRight;
+	var touchTurnRight = deviceTouchRight && !deviceTouchLeft;
+	var touchAccelerate = deviceTouchRight && deviceTouchLeft;
+
+	if(Key.isDown('a') || Key.isDown('left') || touchTurnLeft)
 
 		acceleration.angle-=4*dtc * (1+level/(25+speed.length*2));// *Math.sqrt(acceleration.length);
 
-	if(Key.isDown('d')  || Key.isDown('right'))
+	if(Key.isDown('d')  || Key.isDown('right') || touchTurnRight)
 
 		acceleration.angle+=4*dtc * (1+level/(25+speed.length*2));// *Math.sqrt(acceleration.length);
 
-	if(Key.isDown('w')  || Key.isDown('up'))
+	if(Key.isDown('w')  || Key.isDown('up') || touchAccelerate)
 
 		acceleration.length+=0.1*dtc * (1+level/15);
 
@@ -558,7 +567,6 @@ if(level<11 && pause==0){
 		acceleration.length=0;	
 		speed.length *= Math.pow(0.99,dtc);
 	}
-	
 
 	speed += acceleration.clone() * 0.07 * (1+level/15);// *(0.15 /(1+speed.length));
 
@@ -648,16 +656,18 @@ if(level<11 && pause==0){
 			if((Circles[0].position - Flyer.position).length < Circles[0].bounds.height/2 + Flyer.bounds.height/2)
 				points *= 1.1;
 		
-			if(level == 10)
-				smokesymbol.definition.strokeColor = '#bbb';
-			Circles[0].scale(700/Circles[0].bounds.height);
+			if(level == 10) {
+                smokesymbol.definition.strokeColor = '#aaa';
+                Circles[2].strokeColor = '#fff';
+            }
+            Circles[0].scale(700/Circles[0].bounds.height);
 			Circles[1].scale(5000/Circles[1].bounds.height);
 			Circles[0].fillColor.hue = huestart + huerange*level;
 			background.fillColor.hue = huestart + 180 + huerange*level;
 			background.fillColor.brightness = 0.6-(level/25);
 			background.fillColor.saturation = 0.2+(level/50);
 				
-			for(i=0;i<20;i++){
+			for(i=0;i < numberOfPointCircles;i++){
 
 				pointGroup.children[i].position = center;
 
@@ -736,7 +746,7 @@ if(level<11 && pause==0){
 
 		}
 
-		for(i=0;i<20;i++){
+		for(i=0;i < numberOfPointCircles;i++){
 
 			pointGroup.children[i].position = text[0].position;
 
@@ -774,7 +784,7 @@ if(level<11 && pause==0){
 
 	if(points < 5000){
 
-		text[1].content = 'Control with A W D S. Hit P to pause';
+		text[1].content = 'Control with A W D S. Hit P to pause \nMobile: Touch on right side or left side of screen to turn. Hold in both sides to accelerate.';
 
 	}
 
@@ -787,8 +797,9 @@ if(level<11 && pause==0){
 	
 	text[2].content = 'Level '+level+'/10';
 	text[0].fontSize = 30*(1+points/300000);
-	text[1].fontSize = 20;
-	text[1].position = new Point(view.bounds.width/2,45);
+	text[1].fontSize = 35;
+	text[1].fillColor = 'black';
+	text[1].position = new Point(view.bounds.width/2,90);
 	
 
 	
@@ -834,6 +845,7 @@ text[0].fontSize = 70;
 text[1].content = 'Hit R to play again';
 text[1].position = center + new Point(0,60);
 text[1].fontSize = 30;
+text[1].fillColor = 'white';
 text[3].content = 'YOU WON!';
 text[3].position = center+ new Point(0,-80);
 text[3].fontSize = 100;
@@ -843,6 +855,7 @@ if(Key.isDown('r')){
 	level = 1;
 	points = 0;
 	Circles[0].fillColor.hue = huestart;
+	Circles[2].strokeColor = '#000';
 	background.fillColor.hue = huestart + 180;
 	background.fillColor.brightness = 0.6;
 	background.fillColor.saturation = 0.2;
@@ -850,7 +863,7 @@ if(Key.isDown('r')){
 	}
 
 //-------------MOVE YELLOW CIRCLES--------------
-for (var i = 0; i < 20; i++) {
+for (var i = 0; i < numberOfPointCircles; i++) {
 
 		var item = pointGroup.children[i];
 
@@ -868,13 +881,15 @@ if((Key.isDown('p') || Key.isDown('P')) && pauseDetectEdge){
 		pauseDetectEdge = 0;
 		if(pause==1){
 			pause = 0;
-			text[1].fontSize = 20;
-			text[1].position = new Point(view.bounds.width/2,45);
+			text[1].fontSize = 30;
+			text[1].position = new Point(view.bounds.width/2,70);
+            text[1].fillColor = 'black';
 		} else {
 		pause = 1;
 		text[1].content = 'PAUSED!';
 		text[1].position = center;
 		text[1].fontSize = 80;
+        text[1].fillColor = 'white';
 		text[0].position = center + new Point(0,100);
 		}
 	} else if(!(Key.isDown('p') || Key.isDown('P'))){
@@ -932,7 +947,7 @@ function createFlyer(){
 
 		radius: 15,
 
-		fillColor: '#f00',
+		fillColor: level=== 10 ? '#fff' : '#f00',
 
 		strokeColor: 'black'
 
@@ -942,7 +957,42 @@ function createFlyer(){
 
 }
 
+function someIsLeftOfMiddle(touches) {
+	return touches.some(function(touch){
+		return touch.clientX < windowWidth/2;
+    });
+}
 
+function someIsRightOfMiddle(touches) {
+    return touches.some(function(touch){
+        return touch.clientX > windowWidth/2;
+    });
+}
+
+function touchHandler(event) {
+	deviceTouch = true;
+	if(someIsLeftOfMiddle(Array.from(event.touches))) {
+		deviceTouchLeft = true;
+	} else {
+		deviceTouchLeft = false;
+	}
+	if(someIsRightOfMiddle(Array.from(event.touches))){
+		deviceTouchRight = true;
+	} else {
+		deviceTouchRight = false;
+	}
+}
+
+function windowResizeHandler() {
+	windowWidth = $(window).width();
+}
+
+window.addEventListener('touchstart', touchHandler);
+window.addEventListener('touchend', touchHandler);
+window.addEventListener('resize', windowResizeHandler);
+
+document.addEventListener('contextmenu', function(event){event.preventDefault()});
 
 Flyer = createFlyer();
 
+console.log('Circle Game!');
