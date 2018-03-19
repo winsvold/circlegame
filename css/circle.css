@@ -13,6 +13,7 @@ body {
 }
 
 #canvasdiv {
+	position: relative;
 	width: 100%;
 	text-align: center;
 	pointer-events: none;
@@ -20,4 +21,21 @@ body {
 
 canvas {
 	pointer-events: none;
+}
+
+.full-screen {
+	pointer-events: auto;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	margin: 0.5vw;
+	cursor: pointer;
+}
+
+.full-screen svg {
+	stroke: rgba(255,255,255, 0.8);;
+	fill: transparent;
+	stroke-width: 4px;
+	width: 4vw;
+	height: 4vw;
 }
